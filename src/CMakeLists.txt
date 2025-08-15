@@ -7,7 +7,8 @@ set(CMAKE_C_STANDARD 99)
 add_library(ing
 
             ing_core_utils.c
-            ing_dynamic_array.c)
+            ing_dynamic_array.c
+            ing_hash_table.c)
 
 
 target_compile_definitions(ing

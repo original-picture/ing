@@ -15,8 +15,7 @@ void ING_PRIVATE_dynamic_array_resize_no_zero_type_erased(void* dynamic_array_pt
 
 void ING_PRIVATE_dynamic_array_free(void* dynamic_array_ptr);
 
-
-#define ing_dynamic_array(element_type) \
+#define ing_dynamic_array(element_type, /*hash_function*/...) \
     ing_dynamic_array_##element_type
 
 #define ING_INSTANTIATE_DYNAMIC_ARRAY_TEMPLATE(element_type)                                                                           \
@@ -32,16 +31,16 @@ void ING_PRIVATE_dynamic_array_free(void* dynamic_array_ptr);
                                                                                                                                        \
                                                                                                                                        \
     inline element_type* ing_dynamic_array_##element_type##_back_ptr(ing_dynamic_array(element_type)* dynamic_array_ptr) {             \
-        return &dynamic_array_ptr->arr[dynamic_array_ptr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size-1];                                      \
+        return &dynamic_array_ptr->arr[dynamic_array_ptr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size-1];                                     \
     }                                                                                                                                  \
                                                                                                                                        \
-    inline element_type ing_dynamic_array_##element_type##_back(ing_dynamic_array(element_type)* dynamic_array_ptr) {              \
-        return *ing_dynamic_array_##element_type##_back_ptr(dynamic_array_ptr);                                     \
+    inline element_type ing_dynamic_array_##element_type##_back(ing_dynamic_array(element_type)* dynamic_array_ptr) {                  \
+        return *ing_dynamic_array_##element_type##_back_ptr(dynamic_array_ptr);                                                        \
     }                                                                                                                                  \
                                                                                                                                        \
     inline void ing_dynamic_array_##element_type##_push_back(ing_dynamic_array(element_type)* dynamic_array_ptr, element_type value) { \
         ing_dynamic_array_resize(dynamic_array_ptr, dynamic_array_ptr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size+1);                        \
-        *ing_dynamic_array_##element_type##_back_ptr(dynamic_array_ptr) = value;                                                        \
+        *ing_dynamic_array_##element_type##_back_ptr(dynamic_array_ptr) = value;                                                       \
     }
 
 
@@ -56,14 +55,23 @@ void ING_PRIVATE_dynamic_array_free(void* dynamic_array_ptr);
 #define ing_dynamic_array_init(dynamic_array_ptr)              \
     (memset(dynamic_array_ptr, 0, sizeof(*dynamic_array_ptr)))
 
-#define ing_dynamic_array_reserve(dynamic_array_ptr, size_t_new_capacity)                                                   \
+#define ing_dynamic_array_reserve(dynamic_array_ptr, size_t_new_capacity)                                                      \
     (ING_PRIVATE_dynamic_array_reserve_type_erased((dynamic_array_ptr), size_t_new_capacity, sizeof(*dynamic_array_ptr->arr)))
 
-#define ing_dynamic_array_resize(dynamic_array_ptr, size_t_new_size)                                                    \
-    ((ING_PRIVATE_dynamic_array_resize_type_erased((dynamic_array_ptr), size_t_new_size, sizeof(*dynamic_array_ptr->arr))))
+#define ing_dynamic_array_resize(dynamic_array_ptr, size_t_new_size)                                                        \
+    ((ING_PRIVATE_dynamic_array_resize_type_erased((dynamic_array_ptr), size_t_new_size, sizeof(*((dynamic_array_ptr)->arr)))))
 
 #define ing_dynamic_array_resize_no_zero(dynamic_array_ptr, size_t_new_size)                                                    \
     (ING_PRIVATE_dynamic_array_resize_no_zero_type_erased((dynamic_array_ptr), size_t_new_size, sizeof((*(dynamic_array_ptr))->arr)))
+
+#define ing_dynamic_array_size(dynamic_array_ptr)                \
+    ((dynamic_array_ptr)->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size);
+
+#define ing_dynamic_array_capacity(dynamic_array_ptr)                \
+    ((dynamic_array_ptr)->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.capacity);
+
+#define ing_dynamic_array_push_back(element_type, dynamic_array_ptr, value) \
+    ing_dynamic_array_##element_type##_push_back(dynamic_array_ptr, value)
 
 #define ing_dynamic_array_pop_back(dynamic_array_ptr)             \
     (--(dynamic_array_ptr)->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size)

@@ -77,12 +77,12 @@ void test_push_back_pop_back() {
     {
         ing_dynamic_array(int)* arr = ing_dynamic_array_create_on_heap(int);
 
-        ing_dynamic_array_int_push_back(arr, 5);
+        ing_dynamic_array_push_back(int, arr, 5);
 
         ing_testing_assert(arr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 1);
         ing_testing_assert(arr->arr[0] == 5);
 
-        ing_dynamic_array_int_push_back(arr, 7);
+        ing_dynamic_array_push_back(int, arr, 7);
 
         ing_testing_assert(arr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 2);
         ing_testing_assert(arr->arr[0] == 5);
