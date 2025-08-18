@@ -22,10 +22,12 @@ size_t ing_default_hash_cstring (const char* val);
         struct {                                                                                                        \
             ing_dynamic_array_##ing_linked_list_ptr_##element_type arr;                                                     \
             size_t size;                                                                                                \
-            float load_factor;                                                                                          \
+            float max_load_factor,                                                                                          \
+                      load_factor;                                                                                          \
+            \
                                                                                                                         \
             size_t(*hash_function)(element_type);                                                                       \
-        } PRIVATE_DO_NOT_ACCESS_SERIOUSLY;                                                                              \
+        } PRIVATE;                                                                              \
                                                                                                                         \
     } ing_hash_table(element_type);                                                                        \
                                                                                                                         \
@@ -35,8 +37,9 @@ size_t ing_default_hash_cstring (const char* val);
     inline void ing_hash_table_##element_type##_init_with_hash_function(ing_hash_table(element_type)* hash_table_ptr, hash_function_type(element_type) hash_function) { \
         memset(hash_table_ptr, 0, sizeof(*hash_table_ptr));                                                             \
                                                                                                                         \
-        hash_table_ptr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function = hash_function;                                  \
-        ing_dynamic_array_resize(&(hash_table_ptr->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.arr), 1); \
+        hash_table_ptr->PRIVATE.hash_function = hash_function;                                  \
+        hash_table_ptr->PRIVATE.max_load_factor = .75f; \
+        ing_dynamic_array_resize(&(hash_table_ptr->PRIVATE.arr), 1); \
     }                                                                                                                   \
                                                                                                                         \
     inline ing_hash_table(element_type) ing_hash_table_##element_type##_create_with_hash_function(hash_function_type(element_type) hash_function) {                   \
@@ -60,16 +63,16 @@ size_t ing_default_hash_cstring (const char* val);
     }                                                                                                                                   \
                                                                                                                     \
     inline bool ing_hash_table_##element_type##_contains(ing_hash_table(element_type)* hash_table, element_type value) {             \
-        size_t hash = hash_table->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function(value);                                 \
-        size_t bucket_index = hash % ing_dynamic_array_size(&hash_table->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.arr);          \
+        size_t hash = hash_table->PRIVATE.hash_function(value);                                 \
+        size_t bucket_index = hash % ing_dynamic_array_size(&hash_table->PRIVATE.arr);          \
                                                                                                                         \
-        ing_linked_list(element_type)* node = hash_table->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.arr.arr[bucket_index];          \
+        ing_linked_list(element_type)* node = hash_table->PRIVATE.arr.arr[bucket_index];          \
         while(node) {                                                                                                   \
-            if(value = node->value) {                                                                                   \
+            if(value == node->PRIVATE.value) {                                                                                   \
                 return true;                                                                                                            \
             }                                                                                                           \
                                                                                                                         \
-            node = node->next; \
+            node = node->PRIVATE.next; \
         }                                                                                                               \
                                                                                                                         \
         return false;\
@@ -100,6 +103,14 @@ size_t ing_default_hash_cstring (const char* val);
 #define ing_hash_table_contains(element_type, hash_table_ptr, value) \
     ing_hash_table_##element_type##_contains((hash_table_ptr), (value))
 
+#define ing_dynamic_array_destroy_heap_allocated(dynamic_array_ptr) \
+    (ING_PRIVATE_dynamic_array_free(dynamic_array_ptr))
+
+/// frees any resources dynamic_array_ptr is holding onto. Doesn't call free on dynamic_array_ptr itself!
+#define ing_dynamic_array_deinit(dynamic_array_ptr) \
+    (free((dynamic_array_ptr)->arr))
+
+
 /// the implementation of hash table uses dynamic_array(linked_list(element_type))
 /// this macro will instantiate linked_list(element_type) and dynamic_array(linked_list(element_type)) in addition to hash_table(element_type)
 /// if these types have already been instantiated and included, then use ING_INSTANTIATE_HASH_TABLE_TEMPLATE instead
@@ -108,7 +119,7 @@ size_t ing_default_hash_cstring (const char* val);
 /// because an actual star will mess up macro concatenation
 #define ING_INSTANTIATE_HASH_TABLE_TEMPLATE_AND_DEPENDENCY_TEMPLATES(element_type) \
     ING_INSTANTIATE_LINKED_LIST_TEMPLATE(element_type);                            \
-    typedef ing_linked_list_##element_type* ing_linked_list_ptr_##element_type;        \
+    typedef ING_PRIVATE_linked_list_##element_type* ing_linked_list_ptr_##element_type;        \
     ING_INSTANTIATE_DYNAMIC_ARRAY_TEMPLATE(ing_linked_list_ptr_##element_type)         \
                                                                                    \
     ING_INSTANTIATE_HASH_TABLE_TEMPLATE(element_type)

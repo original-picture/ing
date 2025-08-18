@@ -8,7 +8,8 @@ add_library(ing
 
             ing_core_utils.c
             ing_dynamic_array.c
-            ing_hash_table.c)
+            ing_hash_table.c
+            ing_generic_data_structures_common.h)
 
 
 target_compile_definitions(ing

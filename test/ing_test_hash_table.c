@@ -16,19 +16,19 @@ static void test_create() {
         {
             ing_hash_table(unsigned) ht = ing_hash_table_create(unsigned);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 0);
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.load_factor == 0.f);
+            ing_testing_assert(ht.PRIVATE.size == 0);
+            ing_testing_assert(ht.PRIVATE.load_factor == 0.f);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function == ing_default_hash_unsigned);
+            ing_testing_assert(ht.PRIVATE.hash_function == ing_default_hash_unsigned);
         }
 
         {
             ing_hash_table(unsigned)* ht = ing_hash_table_create_on_heap(unsigned);
 
-            ing_testing_assert(ht->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 0);
-            ing_testing_assert(ht->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.load_factor == 0.f);
+            ing_testing_assert(ht->PRIVATE.size == 0);
+            ing_testing_assert(ht->PRIVATE.load_factor == 0.f);
 
-            ing_testing_assert(ht->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function == ing_default_hash_unsigned);
+            ing_testing_assert(ht->PRIVATE.hash_function == ing_default_hash_unsigned);
         }
 
         {
@@ -36,10 +36,10 @@ static void test_create() {
 
             ing_hash_table_init(unsigned, &ht);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 0);
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.load_factor == 0.f);
+            ing_testing_assert(ht.PRIVATE.size == 0);
+            ing_testing_assert(ht.PRIVATE.load_factor == 0.f);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function == ing_default_hash_unsigned);
+            ing_testing_assert(ht.PRIVATE.hash_function == ing_default_hash_unsigned);
         }
     }
 
@@ -47,19 +47,19 @@ static void test_create() {
         {
             ing_hash_table(unsigned) ht = ing_hash_table_create_with_hash_function(unsigned, alternate_hash_function);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 0);
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.load_factor == 0.f);
+            ing_testing_assert(ht.PRIVATE.size == 0);
+            ing_testing_assert(ht.PRIVATE.load_factor == 0.f);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function == alternate_hash_function);
+            ing_testing_assert(ht.PRIVATE.hash_function == alternate_hash_function);
         }
 
         {
             ing_hash_table(unsigned)* ht = ing_hash_table_create_on_heap_with_hash_function(unsigned, alternate_hash_function);
 
-            ing_testing_assert(ht->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 0);
-            ing_testing_assert(ht->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.load_factor == 0.f);
+            ing_testing_assert(ht->PRIVATE.size == 0);
+            ing_testing_assert(ht->PRIVATE.load_factor == 0.f);
 
-            ing_testing_assert(ht->PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function == alternate_hash_function);
+            ing_testing_assert(ht->PRIVATE.hash_function == alternate_hash_function);
         }
 
         {
@@ -67,14 +67,14 @@ static void test_create() {
 
             ing_hash_table_init_with_hash_function(unsigned, &ht, alternate_hash_function);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.size == 0);
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.load_factor == 0.f);
+            ing_testing_assert(ht.PRIVATE.size == 0);
+            ing_testing_assert(ht.PRIVATE.load_factor == 0.f);
 
-            ing_testing_assert(ht.PRIVATE_DO_NOT_ACCESS_SERIOUSLY.hash_function == alternate_hash_function);
+            ing_testing_assert(ht.PRIVATE.hash_function == alternate_hash_function);
 
             ing_hash_table_contains(unsigned, &ht, 12);
 
-            ing_
+           // ing_
         }
     }
 }
