@@ -20,7 +20,7 @@ size_t ing_default_hash_cstring (const char* val);
 #define ING_INSTANTIATE_HASH_TABLE_TEMPLATE(element_type)                                                               \
     typedef struct ing_hash_table(element_type) {                                                                       \
         struct {                                                                                                        \
-            ing_dynamic_array_##ing_linked_list_ptr_##element_type arr;                                                     \
+            ING_PRIVATE_dynamic_array_ING_PRIVATE_ptr_to_linked_list_##element_type arr;                                                     \
             size_t size;                                                                                                \
             float max_load_factor,                                                                                          \
                       load_factor;                                                                                          \
@@ -119,7 +119,7 @@ size_t ing_default_hash_cstring (const char* val);
 /// because an actual star will mess up macro concatenation
 #define ING_INSTANTIATE_HASH_TABLE_TEMPLATE_AND_DEPENDENCY_TEMPLATES(element_type) \
     ING_INSTANTIATE_LINKED_LIST_TEMPLATE(element_type);                            \
-    typedef ING_PRIVATE_linked_list_##element_type* ing_linked_list_ptr_##element_type;        \
+    typedef ING_PRIVATE_linked_list_##element_type* ING_PRIVATE_ptr_to_linked_list##element_type;        \
     ING_INSTANTIATE_DYNAMIC_ARRAY_TEMPLATE(ing_linked_list_ptr_##element_type)         \
                                                                                    \
     ING_INSTANTIATE_HASH_TABLE_TEMPLATE(element_type)
