@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.28)
 project(ing_test_project C)
 
 set(CMAKE_C_STANDARD 99)

@@ -19,7 +19,7 @@
         \
     } ing_linked_list(element_type);                        \
                                                            \
-inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_init_with_value_and_element_destructor(ing_linked_list(element_type)* linked_list_ptr, element_type value, void(*element_destructor)) { \
+static inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_init_with_value_and_element_destructor(ing_linked_list(element_type)* linked_list_ptr, element_type value, void(*element_destructor)) { \
     linked_list_ptr->PRIVATE.next = NULL;                          \
     linked_list_ptr->PRIVATE.value = value;                \
     linked_list_ptr->PRIVATE.element_destructor = element_destructor;\
@@ -29,22 +29,22 @@ inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_i
                                                            \
                                                            \
 \
-inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_value_and_element_destructor(element_type value, void(*element_destructor)(element_type*)) {                                      \
+static inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_value_and_element_destructor(element_type value, void(*element_destructor)(element_type*)) {                                      \
     return ING_PRIVATE_linked_list_##element_type##_init_with_value_and_element_destructor(malloc(sizeof(ing_linked_list(element_type))), value, element_destructor);                                                           \
 }                                                          \
                                                            \
-inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_element_destructor(void(*element_destructor)(element_type*)) {                                      \
+static inline ing_linked_list(element_type)* ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_element_destructor(void(*element_destructor)(element_type*)) {                                      \
     element_type default_value;                            \
     memset(&default_value, 0, sizeof(default_value));      \
     return ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_value_and_element_destructor(default_value, element_destructor);\
     \
 }                                                                   \
                                                            \
-inline void ING_PRIVATE_linked_list_append() {}                                                         \
+static inline void ING_PRIVATE_linked_list_append() {}                                                         \
                                                            \
 \
     \
-inline void ING_PRIVATE_linked_list_##element_type##_destroy(ing_linked_list(element_type)* linked_list_ptr) {   \
+static inline void ING_PRIVATE_linked_list_##element_type##_destroy(ing_linked_list(element_type)* linked_list_ptr) {   \
     if(linked_list_ptr) {                                  \
         ING_PRIVATE_linked_list_##element_type##_destroy(linked_list_ptr->PRIVATE.next);           \
         if(linked_list_ptr->PRIVATE.element_destructor) {                           \
