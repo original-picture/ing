@@ -5,10 +5,7 @@
 
 /// assert-related stuff
 #ifdef ING_DEBUG
-#define ING_PRIVATE_STRINGIFY(X) \
-    #X
-
-#define ing_internal_assert(condition_expression, /*message*/...)                                                                                \
+    #define ing_internal_assert(condition_expression, /*message*/...)                                                                            \
         {                                                                                                                                        \
             void ing_generic_assert_(_Bool condition, const char* condition_str, const char* message,                                            \
                                      const char* file, int line, const char* function, const char* header_text, const char* footer_text);        \
@@ -20,7 +17,7 @@
         } (void)0
 #else
     #define ing_internal_assert(condition_expression, __VA_ARGS_/*message*/) \
-        (void)0
+        condition_expression
 #endif
 
 /// dynamic memory stuff
@@ -43,3 +40,4 @@ void* ing_memcpy_array(void* dst, void* src, size_t elements_count, size_t eleme
 /// copies sizeof(*dst) bytes into dst
 #define ing_memcpy_dst_size(dst, src) \
     ing_memcpy(dst, src, sizeof(*dst))
+

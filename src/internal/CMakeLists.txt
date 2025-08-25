@@ -9,7 +9,8 @@ add_library(ing_internal
             ing_core_utils.c
             ing_dynamic_array.c
             ing_hash_table.c
-        ing_internal_main_loop_api.c
+            ing_main_loop_extension_api.c
+            ing_extension_api_common.c
             ing_context.c)
 
 
