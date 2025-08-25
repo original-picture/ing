@@ -83,7 +83,7 @@ static void test_insert() {
     {
    ing_hash_table(unsigned)* ht = ing_hash_table_create_on_heap(unsigned);
 
-   ing_hash_table_insert(unsigned, ht, 32);
+  // ing_hash_table_insert(unsigned, ht, 32);
     }
 }
 

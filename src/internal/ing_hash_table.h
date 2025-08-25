@@ -27,6 +27,7 @@ size_t ing_default_hash_cstring (const char* val);
             \
                                                                                                                         \
             size_t(*hash_function)(element_type);                                                                       \
+            void(*element_destructor)(element_type*);\
         } PRIVATE;                                                                              \
                                                                                                                         \
     } ing_hash_table(element_type);                                                                        \
@@ -34,18 +35,20 @@ size_t ing_default_hash_cstring (const char* val);
     typedef size_t(*hash_function_type_##element_type)(element_type);                                                       \
                                                                                                                         \
                                                                                                                         \
-    static inline void ing_hash_table_##element_type##_init_with_hash_function(ing_hash_table(element_type)* hash_table_ptr, hash_function_type(element_type) hash_function) { \
+    static inline void ing_hash_table_##element_type##_init_with_hash_function_and_element_destructor(ing_hash_table(element_type)* hash_table_ptr, hash_function_type(element_type) hash_function, void(*element_destructor)(element_type*)) { \
         memset(hash_table_ptr, 0, sizeof(*hash_table_ptr));                                                             \
                                                                                                                         \
         hash_table_ptr->PRIVATE.hash_function = hash_function;                                  \
-        hash_table_ptr->PRIVATE.max_load_factor = .75f; \
+        hash_table_ptr->PRIVATE.max_load_factor = .75f;                                                                 \
+        hash_table_ptr->PRIVATE.element_destructor = element_destructor;                                                                                                                \
+                                                                                                                        \
         ing_dynamic_array_resize(ING_PRIVATE_ptr_to_linked_list_##element_type, &(hash_table_ptr->PRIVATE.arr), 1); \
     }                                                                                                                   \
                                                                                                                         \
     static inline ing_hash_table(element_type) ing_hash_table_##element_type##_create_with_hash_function(hash_function_type(element_type) hash_function) {                   \
         ing_hash_table(element_type) ret;                                                                               \
                                                                                                                         \
-        ing_hash_table_##element_type##_init_with_hash_function(&ret, hash_function);                                                                     \
+        ing_hash_table_##element_type##_init_with_hash_function_and_element_destructor(&ret, hash_function, NULL);                                                                     \
                                                                                                                         \
         return ret;                                                                                                     \
     }                                                                                                                   \
@@ -53,15 +56,11 @@ size_t ing_default_hash_cstring (const char* val);
     static inline ing_hash_table(element_type)* ing_hash_table_##element_type##_create_on_heap_with_hash_function(hash_function_type(element_type) hash_function) {          \
         ing_hash_table(element_type)* ret = malloc(sizeof(*ret));                                                       \
                                                                                                                         \
-        ing_hash_table_##element_type##_init_with_hash_function(ret, hash_function);                                    \
+        ing_hash_table_##element_type##_init_with_hash_function_and_element_destructor(ret, hash_function, NULL);                                                                     \
                                                                                                                         \
         return ret;                                                                                                     \
     }                                                                                                                   \
                                                                                                                         \
-    static inline void ing_hash_table_##element_type##_insert(ing_hash_table(element_type)* hash_table, element_type value) {             \
-                                                                                                                        \
-    }                                                                                                                                   \
-                                                                                                                    \
     static inline bool ing_hash_table_##element_type##_contains(ing_hash_table(element_type)* hash_table, element_type value) {             \
         size_t hash = hash_table->PRIVATE.hash_function(value);                                 \
         size_t bucket_index = hash % ing_dynamic_array_size(ING_PRIVATE_ptr_to_linked_list_##element_type, &hash_table->PRIVATE.arr);          \
@@ -76,10 +75,22 @@ size_t ing_default_hash_cstring (const char* val);
         }                                                                                                               \
                                                                                                                         \
         return false;\
+    }\
+\
+    static inline void ing_hash_table_##element_type##_insert(ing_hash_table(element_type)* hash_table_ptr, element_type value) {            \
+        if(!ing_hash_table_##element_type##_contains(hash_table_ptr, value)) {                                          \
+            if(((hash_table_ptr->PRIVATE.size + 1) / (float)(hash_table_ptr->PRIVATE.arr.PRIVATE.size)) > hash_table_ptr->PRIVATE.max_load_factor) {    \
+                /* we need to rehash */                                                                                 \
+                size_t ING_PRIVATE_next_prime_after(size_t number);\
+                size_t new_capacity = ING_PRIVATE_next_prime_after(ceilf((hash_table_ptr->PRIVATE.arr.PRIVATE.size + 1) * 1.5f));            \
+                /*create new array and zero it  */\
+                \
+            }                                                                                                               \
+        }\
     }
 
 #define ing_hash_table_init_with_hash_function(element_type, hash_table_ptr, hash_function)      \
-    (ing_hash_table_##element_type##_init_with_hash_function((hash_table_ptr), (hash_function)))
+    (ing_hash_table_##element_type##_init_with_hash_function_and_element_destructor((hash_table_ptr), (hash_function), (NULL)))
 
 #define ing_hash_table_create_with_hash_function(element_type, hash_function)    \
     (ing_hash_table_##element_type##_create_with_hash_function((hash_function)))
@@ -92,7 +103,7 @@ size_t ing_default_hash_cstring (const char* val);
 
 
 #define ing_hash_table_init(element_type, hash_table_ptr) \
-    (ing_hash_table_init_with_hash_function(element_type, hash_table_ptr, (ing_default_hash_##element_type)))
+    (ing_hash_table_init_with_hash_function(element_type, (hash_table_ptr), (ing_default_hash_##element_type)))
 
 #define ing_hash_table_create(element_type) \
     (ing_hash_table_create_with_hash_function(element_type, (ing_default_hash_##element_type)))

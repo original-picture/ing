@@ -23,3 +23,5 @@ target_compile_definitions(ing_test
         PRIVATE
 
         "$<$<CONFIG:Debug>:ING_DEBUG>")
+
+# the ing library is linked in the top-level CMakeLists.txt

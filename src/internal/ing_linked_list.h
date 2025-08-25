@@ -64,7 +64,7 @@ static inline void ING_PRIVATE_linked_list_##element_type##_destroy(ing_linked_l
     (ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_value_and_element_destructor((value), (element_type##_destroy)))
 
 #define ing_linked_list_create_on_heap_with_element_destructor(element_type, element_destructor) \
-    (ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_element_destructor((element_destructor)))
+(ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_element_destructor((element_destructor)))
 
 #define ing_linked_list_create_on_heap_with_value_and_element_destructor(element_type, value, element_destructor) \
     (ING_PRIVATE_linked_list_##element_type##_create_on_heap_with_value_and_element_destructor((value), (element_destructor)))

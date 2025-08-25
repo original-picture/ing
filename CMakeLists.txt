@@ -5,7 +5,14 @@ set(CMAKE_C_STANDARD 99)
 
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(examples)
 
-target_link_libraries(ing_test PRIVATE ing)
+target_include_directories(ing_internal PRIVATE include/internal)
+
+target_include_directories(ing PRIVATE include/internal)
+
+target_link_libraries(ing_test PRIVATE ing_internal)
 target_include_directories(ing_test PRIVATE src)
 
+target_link_libraries(0_ing_hello_window PRIVATE ing)
+target_include_directories(0_ing_hello_window PRIVATE include)
