@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.28)
-project(ing_examples_project C)
+project(ing_examples_project C CXX)
 
 set(CMAKE_C_STANDARD 99)
 

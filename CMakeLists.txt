@@ -9,7 +9,7 @@ add_subdirectory(examples)
 
 target_include_directories(ing_internal PRIVATE include/extension)
 
-target_include_directories(ing PRIVATE include/extension)
+target_include_directories(ing PRIVATE include/extension include)
 
 target_link_libraries(ing_test PRIVATE ing_internal)
 target_include_directories(ing_test PRIVATE src)

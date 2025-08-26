@@ -2,17 +2,15 @@
 #include "ing_main_loop.h"
 #include "ing_main_loop_extension_api.h"
 
-#include "ing_gtk_context_data.h"
+#include "ing_qt_context_data.h"
 
-#include "gtk/gtk.h"
-
-static void gtk_deinit_(void* data) {
+static void qt_deinit_(void* data) {
     gtk_context_data* gtk_data = data;
 
     g_main_loop_unref(gtk_data->loop);
 }
 
-static void gtk_init_() {
+static void qt_init_() {
     gtk_context_data* data = ing_allocate_context_data(gtk_context_data_key, sizeof(gtk_context_data), gtk_deinit_);
 
     data->loop = g_main_loop_new(g_main_context_default(), false);

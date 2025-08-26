@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(ing_library_project C)
+project(ing_library_project C CXX)
 
 set(CMAKE_C_STANDARD 99)
 
@@ -17,14 +17,6 @@ if(NOT DEFINED ING_GUI_BACKEND)
     endif()
 endif()
 
-add_library(ing
-
-            ing_${ING_GUI_BACKEND}_main_loop.c)
-
-add_subdirectory(internal)
-
-target_link_libraries(ing PUBLIC ing_internal) # use PUBLIC visibility because users should be able to extend the library,
-                                               # and they'll need to link against the internal api to do that
 if(${ING_GUI_BACKEND} STREQUAL "win32")
     if(WIN32)
 
@@ -38,14 +30,35 @@ elseif(${ING_GUI_BACKEND} STREQUAL "cocoa")
         message(FATAL_ERROR "ING_GUI_BACKEND \"cocoa\" is only supported on Apple platforms (current platform is ${CMAKE_SYSTEM_NAME})")
     endif()
 elseif(${ING_GUI_BACKEND} STREQUAL "gtk")
+    add_library(ing
+
+                ing_gtk_main_loop.c)
+
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
 
     target_link_libraries(ing PUBLIC PkgConfig::GTK4)
+
 elseif(${ING_GUI_BACKEND} STREQUAL "qt")
+    find_package(Qt6 COMPONENTS Widgets)
+
+    qt_add_library(ing
+
+                   ing_qt_main_loop.cpp)
+
+    set_target_properties(ing PROPERTIES AUTOMOC ON)
+
+    target_link_libraries(ing PUBLIC Qt6::Widgets)
 
 else()
     message(FATAL_ERROR "ing didn't recognize the provided ING_GUI_BACKEND! (it was set to \"${ING_GUI_BACKEND}\")\n"
                         "the supported values are \"win32\" (Windows only), \"cocoa\" (Apple platforms only), \"gtk\", and \"qt\"\n"
                         "(note that gui backend detection is CASE SENSITIVE)")
 endif()
+
+target_compile_definitions(ing PUBLIC ING_GUI_BACKEND=${ING_GUI_BACKEND})
+
+add_subdirectory(internal)
+
+target_link_libraries(ing PUBLIC ing_internal) # use PUBLIC visibility because users should be able to extend the library,
+# and they'll need to link against the internal api to do that
