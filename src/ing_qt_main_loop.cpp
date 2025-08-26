@@ -5,23 +5,26 @@
 #include "ing_qt_context_data.h"
 
 static void qt_deinit_(void* data) {
-    gtk_context_data* gtk_data = data;
-
-    g_main_loop_unref(gtk_data->loop);
+    static_cast<qt_context_data*>(data)->application.~QApplication();
 }
 
 static void qt_init_() {
-    gtk_context_data* data = ing_allocate_context_data(gtk_context_data_key, sizeof(gtk_context_data), gtk_deinit_);
+    auto* data = static_cast<qt_context_data*>(ing_allocate_context_data(context_data_key, sizeof(qt_context_data), qt_deinit_));
 
-    data->loop = g_main_loop_new(g_main_context_default(), false);
+    int argc = 1;
+    static char args[4] = {'i', 'n', 'g', '\0'}; // TODO: figure out a way to expose this in the public api
+    static char* a = &args[0];
+
+    new (&(data->application)) QApplication(argc, &a);
 }
 
-static void gtk_next_frame_() {
-    gtk_context_data* data = ing_get_context_data(gtk_context_data_key);
-
-    g_main_context_iteration(g_main_loop_get_context(data->loop), FALSE);
+static void qt_next_frame_() {
+    QApplication::processEvents();
 }
 
-bool ing_next_frame() {
-    return ing_next_frame_internal(gtk_init_, gtk_next_frame_, NULL);
+extern "C" {
+    _Bool ing_next_frame() {
+        return ing_next_frame_internal(qt_init_, qt_next_frame_, NULL);
+    }
 }
+

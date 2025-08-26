@@ -1,12 +1,11 @@
 #pragma once
 
+#include "ing_context_data_common.h"
+
 #include <QApplication>
 
 
-
-const char* gtk_context_data_key = "ing_qt_context_data";
-
 typedef struct {
-    GMainLoop* loop;
+    QApplication application;
 
-} gtk_context_data;
+} qt_context_data;

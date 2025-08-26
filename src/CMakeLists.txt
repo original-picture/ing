@@ -44,6 +44,8 @@ elseif(${ING_GUI_BACKEND} STREQUAL "qt")
 
     qt_add_library(ing
 
+                   STATIC
+
                    ing_qt_main_loop.cpp)
 
     set_target_properties(ing PROPERTIES AUTOMOC ON)

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "gtk/gtk.h"
+#include "ing_context_data_common.h"
 
-const char* gtk_context_data_key = "ing_gtk_context_data";
+#include "gtk/gtk.h"
 
 typedef struct {
     GMainLoop* loop;
