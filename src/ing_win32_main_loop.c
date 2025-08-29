@@ -16,7 +16,22 @@ static void win32_init_() {
 }
 
 static void win32_next_frame_() {
+    win32_context_data* data = ing_get_context_data(context_data_key);
 
+    MSG messages;
+
+    if(GetMessage(&messages, NULL, 0, 0))
+    {
+        for(unsigned i = 0; i < data->top_level_windows.size; ++i) {
+            /* Translate virtual-key messages into character messages */
+            if(IsDialogMessage(dynamic_array_at(HWND, &data->top_level_windows, i), &messages) == 0)
+            {
+                TranslateMessage(&messages);
+                /* Send message to WindowProcedure */
+                DispatchMessage(&messages);
+            }
+        }
+    }
 }
 
 bool ing_next_frame() {
