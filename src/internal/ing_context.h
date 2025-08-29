@@ -6,7 +6,7 @@
 // this is a C99 library, so I can't use _Thread_local from C11
 // also I'd need to check for C23 too because _Thread_local was replaced with thread_local in C23
 // and I don't feel like doing all that
-#ifdef _MSC
+#ifdef _MSC_VER
     #define ING_THREADLOCAL __declspec(thread)
 #else
     #define ING_THREADLOCAL __thread // it's the same on gcc and clang

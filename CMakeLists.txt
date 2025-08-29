@@ -12,7 +12,7 @@ target_include_directories(ing_internal PRIVATE include/extension)
 target_include_directories(ing PRIVATE include/extension include)
 
 target_link_libraries(ing_test PRIVATE ing_internal)
-target_include_directories(ing_test PRIVATE src)
+target_include_directories(ing_test PRIVATE src/internal)
 
 target_link_libraries(0_ing_hello_window PRIVATE ing)
 target_include_directories(0_ing_hello_window PRIVATE include)

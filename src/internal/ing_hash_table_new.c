@@ -19,7 +19,10 @@ hash_table hash_table_create(size_t sizeof_element_type,
                              void(*element_destructor)(void* element, size_t sizeof_element_type)) {
 
     hash_table ret;
-    hash_table_init(&ret, sizeof_element_type);
+    hash_table_init(&ret, sizeof_element_type,
+                    hash_function,
+                    is_equal,
+                    element_destructor);
 
     return ret;
 }

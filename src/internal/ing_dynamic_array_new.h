@@ -12,22 +12,20 @@ typedef struct {
            sizeof_element_type;
 
     void(*element_destructor)(void* element);
-
-    #ifdef ING_DEBUG
-        const char* element_typename;
-    #endif
 } dynamic_array;
 
 
-void INTERNAL_dynamic_array_init(dynamic_array * ht, size_t sizeof_element_type,
-                        void(*element_destructor)(void* element)
-                        #ifdef ING_DEBUG
-                            , const char* element_typename
-                        #endif
-                        );
+void INTERNAL_dynamic_array_init(dynamic_array* da, size_t sizeof_element_type,
+                                 void(*element_destructor)(void* element));
+
+#define dynamic_array_init(element_type, dynamic_array_ptr, element_destructor) \
+    INTERNAL_dynamic_array_init(dynamic_array_ptr, sizeof(element_type), element_destructor)
 
 dynamic_array* INTERNAL_dynamic_array_create_on_heap(size_t sizeof_element_type,
-                                      void(*element_destructor)(void* element));
+                                                     void(*element_destructor)(void* element));
+
+#define dynamic_array_create_on_heap(element_type, element_destructor) \
+    INTERNAL_dynamic_array_create_on_heap(sizeof(element_type), element_destructor)
 
 /// does NOT allocate additional space geometrically (allocates exactly as much as you ask for)
 void dynamic_array_reserve(dynamic_array* da, size_t new_capacity);
@@ -35,27 +33,15 @@ void dynamic_array_reserve(dynamic_array* da, size_t new_capacity);
 /// allocates additional space geometrically
 void dynamic_array_resize(dynamic_array* da, size_t new_size);
 
-void* INTERNAL_dynamic_array_at(dynamic_array* da, size_t index
-                                #ifdef ING_DEBUG
-                                    , const char* element_typename
-                                #endif
-                                );
+void* INTERNAL_dynamic_array_at(dynamic_array* da, size_t index);
 
+#define dynamic_array_at(element_type, dynamic_array_ptr, size_t_index) \
+    (*(element_type*)INTERNAL_dynamic_array_at(dynamic_array_ptr, size_t_index))
 
-void INTERNAL_dynamic_array_push_back(dynamic_array* da, void* value
-                                      #ifdef ING_DEBUG
-                                          , const char* element_typename
-                                      #endif
-                                      );
+void dynamic_array_push_back(dynamic_array* da, void* value);
 
-#ifdef ING_DEBUG
-    #define dynamic_array_at(element_type, dynamic_array_ptr, size_t_index) \
-        (*(element_type*)INTERNAL_dynamic_array_at(dynamic_array_ptr, size_t_index, #element_type))
+#define make_lvalue(type, rvalue_expression) ((type){rvalue_expression})
 
-    #define dynamic_array_push_back(element_type, dynamic_array_ptr, void_ptr_value) \
-        INTERNAL_dyanmic_array_push_back(dynamic_array_ptr, void_ptr_value, #element_type)
-#else
+#define dynamic_array_push_back_rvalue(element_type, dynamic_array_ptr, rvalue_expression) \
+    dynamic_array_push_back((dynamic_array_ptr), &make_lvalue(element_type, rvalue_expression))
 
-#endif
-
-#define make_lvalue(type, expression) (&((type)(expression)))

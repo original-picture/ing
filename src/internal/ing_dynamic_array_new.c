@@ -8,34 +8,19 @@
 #include <math.h>
 
 void INTERNAL_dynamic_array_init(dynamic_array* da, size_t sizeof_element_type,
-                        void(*element_destructor)(void* element)
-                        #ifdef ING_DEBUG
-                            , const char* element_typename
-                        #endif
-                        ) {
+                        void(*element_destructor)(void* element)) {
 
     memset(da, 0, sizeof(dynamic_array));
+    da->sizeof_element_type = sizeof_element_type;
     da->element_destructor = element_destructor;
-
-    #ifdef ING_DEBUG
-        da->element_typename = element_typename;
-    #endif
 }
 
-dynamic_array* dynamic_array_create_on_heap(size_t sizeof_element_type,
-                                            void(*element_destructor)(void* element)
-                                            #ifdef ING_DEBUG
-                                                , const char* element_typename
-                                            #endif
-                                            ) {
+dynamic_array* INTERNAL_dynamic_array_create_on_heap(size_t sizeof_element_type,
+                                            void(*element_destructor)(void* element)) {
 
     dynamic_array* ret = malloc(sizeof(dynamic_array));
 
-    INTERNAL_dynamic_array_init(ret, sizeof_element_type, element_destructor
-    #ifdef ING_DEBUG
-        , element_typename
-    #endif
-    );
+    INTERNAL_dynamic_array_init(ret, sizeof_element_type, element_destructor);
 
     return ret;
 }
@@ -63,14 +48,7 @@ void dynamic_array_resize(dynamic_array* da, size_t new_size) {
     da->size = new_size;
 }
 
-void* INTERNAL_dynamic_array_at(dynamic_array* da, size_t index
-                                #ifdef ING_DEBUG
-                                    , const char* element_typename
-                                #endif
-                                ) {
-
-    ing_internal_assert(strcmp(element_typename, da->element_typename) == 0);
-
+void* INTERNAL_dynamic_array_at(dynamic_array* da, size_t index) {
     return da->data+index*da->sizeof_element_type;
 }
 
@@ -92,26 +70,14 @@ void dynamic_array_resize_geometric_(dynamic_array* da, size_t new_size) {
 
         dynamic_array_reserve(da, new_capacity_actual);
     }
-    else if(new_size < da->size) {
 
-    }
+    dynamic_array_resize(da, new_size);
 }
 
-void INTERNAL_dynamic_array_push_back(dynamic_array* da, void* value
-                                      #ifdef ING_DEBUG
-                                          , const char* element_typename
-                                      #endif
-                                      ) {
-
-    ing_internal_assert(strcmp(element_typename, da->element_typename) == 0);
-
+void dynamic_array_push_back(dynamic_array* da, void* value) {
     dynamic_array_resize_geometric_(da, da->size+1);
 
-    memcpy(INTERNAL_dynamic_array_at(da, da->size-1
-                                     #ifdef ING_DEBUG
-                                         , element_typename
-                                     #endif
-                                     ),
+    memcpy(INTERNAL_dynamic_array_at(da, da->size-1),
            value,
            da->sizeof_element_type);
 }
