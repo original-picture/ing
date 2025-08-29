@@ -19,7 +19,13 @@ endif()
 
 if(${ING_GUI_BACKEND} STREQUAL "win32")
     if(WIN32)
+        add_library(ing
 
+                    ing_win32_main_loop.c)
+
+
+
+        target_link_libraries(ing PUBLIC ComCtl32)
     else()
         message(FATAL_ERROR "ING_GUI_BACKEND \"win32\" is only supported on Windows (current platform is ${CMAKE_SYSTEM_NAME})")
     endif()

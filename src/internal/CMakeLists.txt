@@ -9,9 +9,11 @@ add_library(ing_internal
             ing_core_utils.c
             ing_dynamic_array.c
             ing_hash_table.c
+            ing_hash_table_new.c
             ing_main_loop_extension_api.c
             ing_extension_api_common.c
-            ing_context.c)
+            ing_context.c
+            ing_dynamic_array_new.c)
 
 
 if((${CMAKE_C_COMPILER_ID} STREQUAL "GNU") OR (${CMAKE_C_COMPILER_ID} STREQUAL "Clang"))
