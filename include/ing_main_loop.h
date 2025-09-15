@@ -6,7 +6,7 @@
     extern "C" {
 #endif
 
-_Bool ing_next_frame();
+bool ing_next_frame();
 
 #ifdef __cplusplus
     };

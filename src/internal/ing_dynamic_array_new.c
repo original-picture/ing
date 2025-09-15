@@ -7,25 +7,25 @@
 #include <string.h>
 #include <math.h>
 
-void INTERNAL_dynamic_array_init(dynamic_array* da, size_t sizeof_element_type,
+void ING_INTERNAL_dynamic_array_init(ing_dynamic_array* da, size_t sizeof_element_type,
                         void(*element_destructor)(void* element)) {
 
-    memset(da, 0, sizeof(dynamic_array));
+    memset(da, 0, sizeof(ing_dynamic_array));
     da->sizeof_element_type = sizeof_element_type;
     da->element_destructor = element_destructor;
 }
 
-dynamic_array* INTERNAL_dynamic_array_create_on_heap(size_t sizeof_element_type,
+ing_dynamic_array* ING_INTERNAL_dynamic_array_create_on_heap(size_t sizeof_element_type,
                                             void(*element_destructor)(void* element)) {
 
-    dynamic_array* ret = malloc(sizeof(dynamic_array));
+    ing_dynamic_array* ret = malloc(sizeof(ing_dynamic_array));
 
-    INTERNAL_dynamic_array_init(ret, sizeof_element_type, element_destructor);
+    ING_INTERNAL_dynamic_array_init(ret, sizeof_element_type, element_destructor);
 
     return ret;
 }
 
-void dynamic_array_reserve(dynamic_array* da, size_t new_capacity) {
+void ing_dynamic_array_reserve(ing_dynamic_array* da, size_t new_capacity) {
     if(new_capacity > da->capacity) {
         void* data = realloc(da->data, new_capacity*da->sizeof_element_type);
         ing_internal_assert(data);
@@ -35,8 +35,8 @@ void dynamic_array_reserve(dynamic_array* da, size_t new_capacity) {
     }
 }
 
-void dynamic_array_resize(dynamic_array* da, size_t new_size) {
-    dynamic_array_reserve(da, new_size);
+void ing_dynamic_array_resize(ing_dynamic_array* da, size_t new_size) {
+    ing_dynamic_array_reserve(da, new_size);
 
     if(new_size > da->size) {
         // zero the new elements
@@ -48,12 +48,11 @@ void dynamic_array_resize(dynamic_array* da, size_t new_size) {
     da->size = new_size;
 }
 
-void* INTERNAL_dynamic_array_at(dynamic_array* da, size_t index) {
+void* ING_INTERNAL_dynamic_array_at(ing_dynamic_array* da, size_t index) {
     return da->data+index*da->sizeof_element_type;
 }
 
-
-void dynamic_array_resize_geometric_(dynamic_array* da, size_t new_size) {
+void ing_dynamic_array_resize_geometric_(ing_dynamic_array* da, size_t new_size) {
     if(new_size > da->capacity) {
         float old_capacity_f = fmaxf(da->capacity, 1.f),
                 new_capacity_target_f = new_size;
@@ -68,16 +67,33 @@ void dynamic_array_resize_geometric_(dynamic_array* da, size_t new_size) {
 
         size_t new_capacity_actual = ceilf(growth_factor * old_capacity_f);
 
-        dynamic_array_reserve(da, new_capacity_actual);
+        ing_dynamic_array_reserve(da, new_capacity_actual);
     }
 
-    dynamic_array_resize(da, new_size);
+    ing_dynamic_array_resize(da, new_size);
 }
 
-void dynamic_array_push_back(dynamic_array* da, void* value) {
-    dynamic_array_resize_geometric_(da, da->size+1);
+void ing_dynamic_array_push_back(ing_dynamic_array* da, void* value) {
+    ing_dynamic_array_resize_geometric_(da, da->size+1);
 
-    memcpy(INTERNAL_dynamic_array_at(da, da->size-1),
+    memcpy(ING_INTERNAL_dynamic_array_at(da, da->size-1),
            value,
            da->sizeof_element_type);
+}
+
+void ing_dynamic_array_destroy(ing_dynamic_array* da, void(*element_destructor)(void*)) {
+    void(*element_destructor_)(void*);
+
+    if(element_destructor) { // if the user passed in a non-null element destructor, use that
+        for(size_t i = 0; i < da->size; ++i) {
+            element_destructor(da->data+i*da->sizeof_element_type);
+        }
+    }
+    else if(da->element_destructor) { // if they didn't, try to use the dynamic array's element destructor
+        for(size_t i = 0; i < da->size; ++i) {
+            da->element_destructor(da->data+i*da->sizeof_element_type);
+        }
+    }
+
+    free(da->data);
 }

@@ -8,7 +8,7 @@
 /// different kinds of asserts use this generic template to generate error messages with different headers and footers
 /// so for example, an internal assert will have a footer that says something to the effect of "this isn't your (the user's) fault",
 /// whereas a user error assert will have a footer that tells that user that they messed up
-void ing_generic_assert_(_Bool condition, const char* condition_str, const char* message,
+void ing_generic_assert_(bool condition, const char* condition_str, const char* message,
                          const char* file, int line, const char* function, const char* header_text, const char* footer_text) {
     if(!condition) {
         fprintf(stderr, "%s\n\n"
@@ -39,7 +39,7 @@ void ing_generic_assert_(_Bool condition, const char* condition_str, const char*
     }
 }
 
-void ing_internal_assert_(_Bool condition, const char* condition_str, const char* message,
+void ing_internal_assert_(bool condition, const char* condition_str, const char* message,
                           const char* file, int line, const char* function) {
 
     ing_generic_assert_(condition, condition_str, message,

@@ -49,13 +49,13 @@ elseif(${ING_GUI_BACKEND} STREQUAL "qt")
     find_package(Qt6 COMPONENTS Widgets)
 
     qt_add_library(ing
+                       STATIC # qt will still be linked dynamically
 
-                   STATIC
-
-                   ing_qt_main_loop.cpp)
+                       ing_qt_main_loop.cpp)
 
     set_target_properties(ing PROPERTIES AUTOMOC ON)
 
+    get_target_property(target_type Qt6::Widgets TYPE)
     target_link_libraries(ing PUBLIC Qt6::Widgets)
 
 else()

@@ -9,4 +9,5 @@ add_executable(0_ing_hello_window
 
                0_ing_hello_window.c)
 
-# the ing library is linked in the top-level CMakeLists.txt
+# the ing library is linked in the top-level CMakeLists.txt using target_link_libraries(0_ing_hello_window PRIVATE ing)
+# the ing library exposes its public include directories, so there's no need to do target_include_directories
