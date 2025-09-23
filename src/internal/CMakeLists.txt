@@ -23,4 +23,5 @@ target_compile_definitions(ing_internal
 
         PRIVATE
 
-        "$<$<CONFIG:Debug>:ING_DEBUG>")
+        "$<$<CONFIG:Debug>:ING_DEBUG>"
+        "$<$<CONFIG:Debug>:ING_STATIC_IF_NOT_DEBUG>")

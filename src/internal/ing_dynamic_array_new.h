@@ -34,14 +34,27 @@ ing_dynamic_array* ING_INTERNAL_dynamic_array_create_on_heap(size_t sizeof_eleme
 /// does NOT allocate additional space geometrically (allocates exactly as much as you ask for)
 void ing_dynamic_array_reserve(ing_dynamic_array* da, size_t new_capacity);
 
-/// allocates additional space geometrically
+/// does NOT allocate additional space geometrically (allocates exactly as much as you ask for)
 void ing_dynamic_array_resize(ing_dynamic_array* da, size_t new_size);
 
-void* ING_INTERNAL_dynamic_array_at(ing_dynamic_array* da, size_t index);
+/// returns a void pointer to the element at index
+/// not to be confused with ing_dynamic_array_at_as_void_ptr, which does something different
+/// see the comment on the declaration of ing_dynamic_array_at_as_void_ptr for more details
+void* ing_dynamic_array_at_ptr(ing_dynamic_array* da, size_t index);
 
+/// NOTE: this does NOT return a void pointer *to* the element at index!
+///       it returns the element at index *interpreted* as a void pointer
+/// only use this if element_type is a pointer
+/// assuming element_type is a pointer, returns the desired element as a void*
+/// using this insteada of the normal ing_dynamic_array_at lets you avoid typing out element_type
+void* ing_dynamic_array_at_as_void_ptr(ing_dynamic_array* da, size_t index);
+
+/// if element_type is a pointer, you can use ing_dynamic_array_at_as_void_ptr instead
+/// that way you won't have to type out element_type
 #define ing_dynamic_array_at(element_type, ing_dynamic_array_ptr, size_t_index) \
-    (*(element_type*)ING_INTERNAL_dynamic_array_at(ing_dynamic_array_ptr, size_t_index))
+    (*(element_type*)ing_dynamic_array_at_ptr(ing_dynamic_array_ptr, size_t_index))
 
+/// allocates additional space geometrically
 void ing_dynamic_array_push_back(ing_dynamic_array* da, void* value);
 
 /// calls element_destructor on every element of the array, and then free's the array

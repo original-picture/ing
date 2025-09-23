@@ -178,7 +178,7 @@
 #define ing_dynamic_array_data(element_type, dynamic_array_ptr)                \
     (ING_PRIVATE_dynamic_array_##element_type##_data((dynamic_array_ptr)))
 
-#define ing_dynamic_array_at_ptr(element_type, dynamic_array_ptr, size_t_index)                \
+#define ing_dynamic_array_at_as_void_ptr(element_type, dynamic_array_ptr, size_t_index)                \
     (ING_PRIVATE_dynamic_array_##element_type##_at_ptr((dynamic_array_ptr), (size_t_index)))
 
 #define ing_dynamic_array_at(element_type, dynamic_array_ptr, size_t_index)                \

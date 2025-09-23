@@ -48,8 +48,14 @@ void ing_dynamic_array_resize(ing_dynamic_array* da, size_t new_size) {
     da->size = new_size;
 }
 
-void* ING_INTERNAL_dynamic_array_at(ing_dynamic_array* da, size_t index) {
-    return da->data+index*da->sizeof_element_type;
+void* ing_dynamic_array_at_ptr(ing_dynamic_array* da, size_t index) {
+    ing_internal_assert(index < da->size);
+    return da->data+da->sizeof_element_type*index;
+}
+
+void* ing_dynamic_array_at_as_void_ptr(ing_dynamic_array* da, size_t index) {
+            // this is not a strict aliasing violation (I think)
+    return *(void**)(da->data+index*da->sizeof_element_type);
 }
 
 void ing_dynamic_array_resize_geometric_(ing_dynamic_array* da, size_t new_size) {
@@ -76,7 +82,7 @@ void ing_dynamic_array_resize_geometric_(ing_dynamic_array* da, size_t new_size)
 void ing_dynamic_array_push_back(ing_dynamic_array* da, void* value) {
     ing_dynamic_array_resize_geometric_(da, da->size+1);
 
-    memcpy(ING_INTERNAL_dynamic_array_at(da, da->size-1),
+    memcpy(ing_dynamic_array_at_as_void_ptr(da, da->size-1),
            value,
            da->sizeof_element_type);
 }
