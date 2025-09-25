@@ -87,15 +87,8 @@ void ing_dynamic_array_push_back(ing_dynamic_array* da, void* value) {
            da->sizeof_element_type);
 }
 
-void ing_dynamic_array_destroy(ing_dynamic_array* da, void(*element_destructor)(void*)) {
-    void(*element_destructor_)(void*);
-
-    if(element_destructor) { // if the user passed in a non-null element destructor, use that
-        for(size_t i = 0; i < da->size; ++i) {
-            element_destructor(da->data+i*da->sizeof_element_type);
-        }
-    }
-    else if(da->element_destructor) { // if they didn't, try to use the dynamic array's element destructor
+void ing_dynamic_array_destroy(ing_dynamic_array* da) {
+    if(da->element_destructor) { // if they didn't, try to use the dynamic array's element destructor
         for(size_t i = 0; i < da->size; ++i) {
             da->element_destructor(da->data+i*da->sizeof_element_type);
         }
