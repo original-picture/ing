@@ -11,13 +11,13 @@ static void test_init() {
         ing_dynamic_array da;
         ing_dynamic_array_init(int, &da, NULL);
 
-        ing_dynamic_array_destroy(&da, NULL);
+        ing_dynamic_array_destroy(&da);
     }
 
     {
         ing_dynamic_array* da = ing_dynamic_array_create_on_heap(int, NULL);
 
-        ing_dynamic_array_destroy(da, NULL);
+        ing_dynamic_array_destroy(da);
     }
 }
 
@@ -40,7 +40,7 @@ static void test_reserve_and_resize() {
         ing_dynamic_array_resize(da, 20);
         ing_testing_assert(ing_dynamic_array_at(int, da, 0) == 5);
 
-        ing_dynamic_array_destroy(da, NULL);
+        ing_dynamic_array_destroy(da);
     }
 }
 
@@ -54,7 +54,7 @@ void test_push_back_pop_back() {
     ing_testing_assert(ing_dynamic_array_at(int, da, 0) == 5);
     ing_testing_assert(ing_dynamic_array_at(int, da, 1) == 7);
 
-    ing_dynamic_array_destroy(da, NULL);
+    ing_dynamic_array_destroy(da);
 }
 
 void test_dynamic_array() {

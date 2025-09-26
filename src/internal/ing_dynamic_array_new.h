@@ -57,7 +57,4 @@ void* ing_dynamic_array_at_as_void_ptr(ing_dynamic_array* da, size_t index);
 /// allocates additional space geometrically
 void ing_dynamic_array_push_back(ing_dynamic_array* da, void* value);
 
-/// calls element_destructor on every element of the array, and then free's the array
-/// if element_destructor is NULL, then the dynamic array's element destructor is used.
-/// If the dynamic array's element destructor is NULL too, then this function does nothing
 void ing_dynamic_array_destroy(ing_dynamic_array* da);

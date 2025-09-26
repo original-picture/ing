@@ -19,10 +19,6 @@ typedef struct {
     size_t size;
 } ing_linked_list;
 
-void ing_linked_list_prepend(ing_linked_list_node** ll, void* value, size_t value_size_in_bytes);
-
-void ing_linked_list_destroy(ing_linked_list_node* ll, void(*element_destructor)(void*));
-
 struct ing_hash_table;
 
 typedef struct {
@@ -48,7 +44,8 @@ typedef struct ing_hash_table {
 
     void (*element_destructor)(void* element);
 
-    size_t default_hash_and_comparison_initial_sequence_length;
+    size_t sizeof_element_type,
+           default_hash_and_comparison_initial_sequence_length;
 
     uint8_t index_in_size_table;
 
@@ -75,8 +72,8 @@ ing_hash_table* ING_INTERNAL_hash_table_create_on_heap(size_t sizeof_element_typ
                                                        void(*element_destructor)(void* element));
 */
 
-#define ing_hash_table_init(element_type, hash_table_ptr, hash_function, is_equal, element_destructor) \
-    (ING_INTERNAL_hash_table_init((hash_table_ptr), sizeof(element_type), (hash_function), (is_equal), (element_destructor)))
+#define ing_hash_table_init(element_type, hash_table_ptr, hash_function, is_equal, element_destructor, size_t_default_hash_initial_sequence_length) \
+    (ING_INTERNAL_hash_table_init((hash_table_ptr), sizeof(element_type), (hash_function), (is_equal), (element_destructor), (size_t_default_hash_initial_sequence_length)))
 
 bool ing_hash_table_contains(const ing_hash_table* ht, void* value);
 

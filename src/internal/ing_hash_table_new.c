@@ -95,12 +95,26 @@ static const size_t geometric_size_table__[] = {
         364794859225091
 };
 
-void ing_linked_list_prepend(ing_linked_list_node** ll, void* value, size_t value_size_in_bytes) {
+static void linked_list_prepend_(ing_linked_list_node** ll, void* value, size_t value_size_in_bytes) {
     ing_linked_list_node* new_front_node = malloc(sizeof(ing_linked_list_node) + value_size_in_bytes);
     memcpy(&new_front_node->value, value, value_size_in_bytes);
     new_front_node->next = *ll;
 
     (*ll) = new_front_node;
+}
+
+static void linked_list_init_(ing_linked_list_node** node, void* value, size_t value_size_in_bytes) {
+    *node = malloc(sizeof(ing_linked_list_node) + value_size_in_bytes);
+    (*node)->next = NULL;
+    memcpy((*node)->value, value, value_size_in_bytes);
+}
+
+static void linked_list_append_(ing_linked_list_node** end_node, void* value, size_t value_size_in_bytes) {
+    ing_internal_assert((*end_node)->next == NULL);
+
+    ing_linked_list_node* new_node;
+    linked_list_init_(&new_node, value, value_size_in_bytes);
+    (*end_node)->next = new_node;
 }
 
 void ing_linked_list_destroy(ing_linked_list_node* ll, void(*element_destructor)(void*)) {
@@ -123,10 +137,11 @@ void ING_INTERNAL_hash_table_init(ing_hash_table* ht, size_t sizeof_element_type
 
     memset(ht, 0, sizeof(*ht));
                                                                                     // I destroy the elements of the linked lists manually in ing_linked_list_destroy
-    ING_INTERNAL_dynamic_array_init(&ht->array_of_linked_list, sizeof_element_type, NULL);
+    ING_INTERNAL_dynamic_array_init(&ht->array_of_linked_list, sizeof(ing_linked_list_node*), NULL);
 
     ht->hash_function                                       = hash_function;
     ht->is_equal                                            = is_equal;
+    ht->sizeof_element_type                                 = sizeof_element_type;
     ht->default_hash_and_comparison_initial_sequence_length = default_hash_and_comparison_initial_sequence_length;
     ht->element_destructor                                  = element_destructor;
 }
@@ -289,7 +304,7 @@ static void rehash_(ing_hash_table* ht, size_t new_bucket_count) {
         }
     }
 
-    ing_dynamic_array_destroy(&old_array, NULL);
+    ing_dynamic_array_destroy(&old_array);
 }
 
 static void conditional_rehash_(ing_hash_table* ht, size_t additional_entries_count) {
@@ -303,8 +318,32 @@ static void conditional_rehash_(ing_hash_table* ht, size_t additional_entries_co
 }
 
 bool ing_hash_table_insert(ing_hash_table* ht, void* value) {
+    conditional_rehash_(ht, 1);
 
+    size_t index = get_hash_index_(ht, value);
 
+    ing_linked_list_node** node = ing_dynamic_array_at_ptr(&ht->array_of_linked_list, index);
+
+    while(*node && (*node)->next) {
+        if(do_equals_comparison_(ht, (*node)->value, value)) {
+            return false;
+        }
+
+        if((*node)->next) {
+            (*node) = (*node)->next;
+        }
+        else {
+            break;
+        }
+    }
+
+    // at this point, we can be sure that value doesn't already exist in ht,
+    if((*node)) {
+        linked_list_append_(node, value, ht->sizeof_element_type);
+    }
+    else {
+        linked_list_init_(node, value, ht->sizeof_element_type);
+    }
 
     return true;
 }

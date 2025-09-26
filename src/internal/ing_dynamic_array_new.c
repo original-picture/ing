@@ -82,7 +82,7 @@ void ing_dynamic_array_resize_geometric_(ing_dynamic_array* da, size_t new_size)
 void ing_dynamic_array_push_back(ing_dynamic_array* da, void* value) {
     ing_dynamic_array_resize_geometric_(da, da->size+1);
 
-    memcpy(ing_dynamic_array_at_as_void_ptr(da, da->size-1),
+    memcpy(ing_dynamic_array_at_ptr(da, da->size-1),
            value,
            da->sizeof_element_type);
 }

@@ -16,9 +16,9 @@ static void test_create() {
 
     ing_hash_table ht;
 
-    ing_hash_table_init(int, &ht, NULL, NULL, NULL);
+    ing_hash_table_init(int, &ht, NULL, NULL, NULL, 0);
 
-    ing_testing_assert(ht.buckets_count == 0);
+    ing_testing_assert(ht.array_of_linked_list.size == 0);
     ing_testing_assert(ht.entries_count == 0);
 }
 
@@ -30,9 +30,12 @@ static void test_insert_contains() {
 
 static void test_insert() {
     {
-   //ing_hash_table(unsigned)* ht = ing_hash_table_create_on_heap(unsigned);
+    ing_hash_table ht;
+    ing_hash_table_init(unsigned, &ht, NULL, NULL, NULL, 0);
 
-  // ing_hash_table_insert(unsigned, ht, 32);
+    unsigned u = 32;
+    ing_hash_table_insert(&ht, &u);
+    ing_testing_assert(ing_hash_table_contains(&ht, &u));
     }
 }
 
